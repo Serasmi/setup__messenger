@@ -10,7 +10,6 @@ Meteor.methods({
                                     receiverId,
                                     forwardedIds = [],
                                 }) {
-        console.dir(arguments);
 
         check(text, String);
         check(senderId, String);

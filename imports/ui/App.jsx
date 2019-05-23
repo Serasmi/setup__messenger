@@ -19,6 +19,48 @@ import {withStyles} from '@material-ui/core/styles';
 const styles = theme => ({
     content: {
         height: '100vh',
+        alignContent: 'stretch',
+        flexDirection: 'column',
+    },
+    contentHeader: {
+        padding: 16,
+        flexBasis: 50,
+    },
+    contentHeaderInput: {
+    },
+    contentBody: {
+        flex: '1 1 auto',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        paddingBottom: 16,
+        height: 'calc(100vh - 270px)',
+        overflowY: 'auto',
+    },
+    contentBodyMessageWrap: {
+
+    },
+    contentBodyMessage: {
+        margin: 16,
+        marginBottom: 0,
+        marginRight: 64,
+        padding: 8,
+    },
+    contentBodyMessageSelf: {
+        margin: 16,
+        marginBottom: 0,
+        marginLeft: 64,
+        padding: 8,
+        alignSelf: 'flex-end',
+        backgroundColor: 'rgba(0, 128, 255, 0.2)',
+    },
+    contentFooter: {
+        padding: 16,
+        display: 'flex',
+        flexDirection: 'column',
+        borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+        alignItems: 'flex-end',
+        flexBasis: 200,
     },
     iconWrap: {
         display: 'flex',
@@ -34,7 +76,9 @@ const styles = theme => ({
         width: 400,
     },
     main: {
-        height: 300, // TODO: temp hack
+    },
+    rootContainer: {
+        height: '100vh',
     },
     sidebar: {
         borderRight: '1px solid rgba(0, 0, 0, 0.12)',
@@ -121,6 +165,8 @@ class App extends React.PureComponent {
                     this.setState({
                         message: '',
                     });
+                } else {
+                    console.log(err);
                 }
             });
         }
@@ -149,7 +195,7 @@ class App extends React.PureComponent {
 
         return (
             <div>
-                <Grid container>
+                <Grid container alignItems="center" className={classes.rootContainer}>
                     {
                         !deer
                             ? <Grid item xs={12}>
@@ -197,18 +243,57 @@ class App extends React.PureComponent {
                                         }
                                     </List>
                                 </Grid>
-                                <Grid item xs={9} className={classes.content}>
-                                    <Grid container>
-                                        <Grid item xs={12} className={classes.main}>
-                                            {/*  TODO: add main frame component  */}
+                                <Grid item xs={9}>
+                                    <Grid container className={classes.content}>
+                                        <Grid item xs={12} className={classes.contentHeader}>
+                                            {
+                                                selectedDeer
+                                                    ? <Typography variant="h6" color="inherit">
+                                                        Chat with {selectedDeer.username}
+                                                    </Typography>
+                                                    : <Typography variant="h6" color="secondary">
+                                                        {`<< Select some deer to chat`}
+                                                    </Typography>
+                                            }
                                         </Grid>
-                                        <Grid item xs={12}>
-                                            <input
-                                                type="text"
+                                        <Grid item xs={12} className={classes.contentBody} id="messagesWrapper">
+                                            {
+                                                Array.isArray(messages)
+                                                && messages.map(message =>
+                                                    <Paper
+                                                        className={
+                                                            message.senderId === deer._id
+                                                            ? classes.contentBodyMessageSelf
+                                                            : classes.contentBodyMessage
+                                                        }
+                                                        key={message._id}
+                                                    >
+                                                        <Typography variant="body1">
+                                                            {message.text}
+                                                        </Typography>
+                                                    </Paper>)
+                                            }
+                                        </Grid>
+                                        <Grid item xs={12} className={classes.contentFooter}>
+                                            <TextField
+                                                fullWidth
+                                                label="Enter message*"
+                                                margin="normal"
+                                                multiline
+                                                rows={3}
+                                                rowsMax={3}
+                                                className={classes.contentHeaderInput}
                                                 onChange={this.handleInputMessageChange}
                                                 value={this.state.message}
                                             />
-                                            <button onClick={this.handleMessageSending}>Send</button>
+                                            <Button
+                                                color="primary"
+                                                variant="contained"
+                                                onClick={this.handleMessageSending}
+                                                size="large"
+                                            >
+                                                Send
+                                            </Button>
                                         </Grid>
                                     </Grid>
                                 </Grid>
