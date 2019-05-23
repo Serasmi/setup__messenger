@@ -160,6 +160,13 @@ class App extends React.PureComponent {
     }
 
     @autobind
+    handleInputMessageKeyUp(event) {
+        if(event.ctrlKey && (event.keyCode === 13 || event.keyCode === 10) ) {
+            this.handleMessageSending();
+        }
+    }
+
+    @autobind
     handleDeerSelection(deer) {
         Session.set('selected-deer', deer);
         setTimeout(() => {
@@ -313,6 +320,7 @@ class App extends React.PureComponent {
                                                 rowsMax={3}
                                                 className={classes.contentHeaderInput}
                                                 onChange={this.handleInputMessageChange}
+                                                onKeyUp={this.handleInputMessageKeyUp}
                                                 value={this.state.message}
                                             />
                                             <Button
