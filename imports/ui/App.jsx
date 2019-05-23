@@ -23,8 +23,9 @@ const styles = theme => ({
         flexDirection: 'column',
     },
     contentHeader: {
-        padding: 16,
+        padding: '8px 16px',
         flexBasis: 50,
+        display: 'flex',
     },
     contentHeaderInput: {
     },
@@ -62,6 +63,9 @@ const styles = theme => ({
         alignItems: 'flex-end',
         flexBasis: 200,
     },
+    deerList: {
+        paddingTop: 0,
+    },
     iconWrap: {
         display: 'flex',
         justifyContent: 'center',
@@ -75,7 +79,14 @@ const styles = theme => ({
         padding: 16,
         width: 400,
     },
-    main: {
+    profile: {
+        backgroundColor: 'rgba(0, 114, 255, 0.61)',
+        color: 'white',
+        padding: 8,
+    },
+    profileText: {
+        marginLeft: 8,
+        color: 'white',
     },
     rootContainer: {
         height: '100vh',
@@ -83,6 +94,7 @@ const styles = theme => ({
     sidebar: {
         borderRight: '1px solid rgba(0, 0, 0, 0.12)',
         height: '100vh',
+        overflowY: 'auto',
     },
 });
 
@@ -92,7 +104,11 @@ const generateDeerId = () => Math.floor(Math.random() * 10000).toString().padSta
 
 @withTracker(() => {
     const deer = Session.get('deer');
-    const deers = Deers.find({}).fetch();
+    const deers = Deers.find({}, {
+        sort: {
+            username: 1,
+        }
+    }).fetch();
     const selectedDeer = Session.get('selected-deer');
     let messages;
 
@@ -146,6 +162,10 @@ class App extends React.PureComponent {
     @autobind
     handleDeerSelection(deer) {
         Session.set('selected-deer', deer);
+        setTimeout(() => {
+            const messagesWrapper = document.getElementById('messagesWrapper');
+            messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
+        }, 100);
     }
 
     @autobind
@@ -227,7 +247,13 @@ class App extends React.PureComponent {
                             </Grid>
                             : <React.Fragment>
                                 <Grid item xs={3} className={classes.sidebar}>
-                                    <List>
+                                    <List className={classes.deerList}>
+                                        <ListItem divider className={classes.profile}>
+                                            <Icon fontSize="large">face</Icon>
+                                            <Typography variant="h6" className={classes.profileText} inline>
+                                                {deer.username}
+                                            </Typography>
+                                        </ListItem>
                                         {
                                             Array.isArray(deers)
                                             && deers.map(deer =>
@@ -251,9 +277,12 @@ class App extends React.PureComponent {
                                                     ? <Typography variant="h6" color="inherit">
                                                         Chat with {selectedDeer.username}
                                                     </Typography>
-                                                    : <Typography variant="h6" color="secondary">
-                                                        {`<< Select some deer to chat`}
-                                                    </Typography>
+                                                    : <React.Fragment>
+                                                        <Icon color="secondary" fontSize="large">transit_enterexit</Icon>
+                                                        <Typography variant="h6" color="secondary" inline>
+                                                            Select some deer to chat
+                                                        </Typography>
+                                                    </React.Fragment>
                                             }
                                         </Grid>
                                         <Grid item xs={12} className={classes.contentBody} id="messagesWrapper">
